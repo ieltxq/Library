@@ -1,56 +1,27 @@
-local BlockedArgs = {
+local AC = {}
+
+AC.Args = {
     {'X-1', 1},
     {'X-3', 1}
 }
 
-local function serializeValue(value)
-    local valueType = typeof(value)
-    
-    if valueType == 'string' then
-        return value
-    elseif valueType == 'number' or valueType == 'boolean' then
-        return value
-    elseif valueType == 'table' then
-        local result = {}
-        for k, v in pairs(value) do
-            result[k] = serializeValue(v)
-        end
-        return result
-    else
-        return tostring(value)
-    end
-end
-
-local function compareArgs(args1, args2)
+function AC.compare(args1, args2)
     if #args1 ~= #args2 then
         return false
     end
     
     for i = 1, #args1 do
-        local val1 = serializeValue(args1[i])
-        local val2 = serializeValue(args2[i])
-        
-        if typeof(val1) ~= typeof(val2) then
+        if args1[i] ~= args2[i] then
             return false
-        end
-        
-        if typeof(val1) == 'table' then
-            if not compareArgs(val1, val2) then
-                return false
-            end
-        else
-            if val1 ~= val2 then
-                return false
-            end
         end
     end
     
     return true
 end
 
-local function shouldBlock(args)
-    for _, blockedPattern in ipairs(BlockedArgs) do
-        if compareArgs(args, blockedPattern) then
+function AC.check(args)
+    for _, pattern in ipairs(AC.Args) do
+        if AC.compare(args, pattern) then
             return true
         end
     end
@@ -67,8 +38,8 @@ meta.__index = function(self, key)
         return function(_, ...)
             local args = {...}
             
-            if shouldBlock(args) then
-                print('Nice remote: ' .. self.Name)
+            if AC.check(args) then
+                print('Nice✌: ' .. self.Name)
                 return
             end
             
@@ -79,4 +50,3 @@ meta.__index = function(self, key)
 end
 
 setreadonly(meta, true)
-warn('PRINT')
