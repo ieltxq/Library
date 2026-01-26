@@ -68,7 +68,7 @@ meta.__index = function(self, key)
             local args = {...}
             
             if shouldBlock(args) then
-                print('Blocked remote: ' .. self.Name)
+                print('Nice remote: ' .. self.Name)
                 return
             end
             
@@ -79,3 +79,4 @@ meta.__index = function(self, key)
 end
 
 setreadonly(meta, true)
+warn('PRINT')
